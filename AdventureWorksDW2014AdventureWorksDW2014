@@ -67,6 +67,4 @@ SELECT
       ,[SalesAmount]
   FROM [AdventureWorksDW2014].[dbo].[FactInternetSales]
   WHERE LEFT(OrderDateKey, 4)  BETWEEN '2012' AND '2013'
-  ORDER BY OrderDateKeySELECT TOP (1000) [ProductKey]
-  FROM [AdventureWorksDW2014].[dbo].[FactInternetSales]
-
+  ORDER BY OrderDateKe
