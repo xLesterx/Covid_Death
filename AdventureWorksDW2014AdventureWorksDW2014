@@ -1,0 +1,72 @@
+--CLEANING DIM_DATE--
+SELECT  [DateKey]
+      ,[FullDateAlternateKey] AS Date
+      ,[EnglishDayNameOfWeek] AS Day
+      ,[WeekNumberOfYear] AS Week_No
+      ,[EnglishMonthName] AS Months
+	  ,LEFT(EnglishMonthName,3) AS Months_Short
+      ,[MonthNumberOfYear] AS Month_No
+      ,[CalendarQuarter] AS Quarter
+      ,[CalendarYear] AS Year
+  FROM [AdventureWorksDW2014].[dbo].[DimDate]
+  WHERE CalendarYear BETWEEN '2012' AND '2013'
+
+
+-- CLEANING DIM_CUSTOMER--
+SELECT 
+    c.CustomerKey AS CustomerKey
+    ,c.[FirstName] AS FirstName
+    ,c.[LastName] AS LastName
+    ,c.FirstName + ' ' + c.LastName AS FullName
+    ,CASE c.[Gender] 
+        WHEN 'M' THEN 'Male'
+        WHEN 'F' THEN 'Female'
+    END AS Gender
+    ,c.[DateFirstPurchase] AS DateFirstPurchase
+	,g.city AS Customer_City   --JOINED IN CUSTOMER CITY FROM GEOGRAPHY TABLE
+FROM [AdventureWorksDW2014].[dbo].[DimCustomer] AS c
+LEFT JOIN [AdventureWorksDW2014].[dbo].[DimGeography] AS g ON g.GeographyKey = c.GeographyKey
+ORDER BY CustomerKey 
+
+
+--CLEANING DIM_PRODUCTS_TABLE
+
+-- Alter the column data type separately 
+ALTER TABLE [AdventureWorksDW2014].[dbo].[DimProduct]
+ALTER COLUMN [Status] NVARCHAR(8);
+
+SELECT Status
+FROM [AdventureWorksDW2014].[dbo].[DimProduct];
+
+SELECT 
+	  p.[ProductKey]
+      ,p.[ProductAlternateKey] AS Product_Code
+      ,p.[EnglishProductName] AS Product_Name
+	  ,ps.EnglishProductSubcategoryName AS Sub_Category
+	  ,pc.EnglishProductCategoryName AS Product_Category
+      ,p.[Color] AS Product_Color
+      ,p.[Size] AS Product_Size
+      ,p.[ProductLine] AS Product_Line
+      ,p.[ModelName] AS Product_Name
+      ,p.[EnglishDescription] AS Product_Description
+      ,ISNULL(p.Status, 'Outdated') AS Product_Status
+FROM [AdventureWorksDW2014].[dbo].[DimProduct] AS p
+INNER JOIN [AdventureWorksDW2014].[dbo].[DimProductSubcategory] AS ps 
+    ON ps.ProductSubcategoryKey = p.ProductSubcategoryKey
+INNER JOIN [AdventureWorksDW2014].[dbo].[DimProductCategory] AS pc
+    ON pc.ProductCategoryKey = ps.ProductCategoryKey
+ORDER BY p.ProductKey
+
+
+--CLEANING FACT_INTERNET_SALES
+SELECT  
+[ProductKey]
+      ,[OrderDateKey] 
+      ,[DueDateKey] 
+     ,[SalesOrderNumber] 
+      ,[SalesAmount]
+  FROM [AdventureWorksDW2014].[dbo].[FactInternetSales]
+  WHERE LEFT(OrderDateKey, 4)  BETWEEN '2012' AND '2013'
+  ORDER BY OrderDateKeySELECT TOP (1000) [ProductKey]
+  FROM [AdventureWorksDW2014].[dbo].[FactInternetSales]
+
